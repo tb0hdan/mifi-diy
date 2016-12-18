@@ -29,13 +29,13 @@ function shuffle() {
 }
 
 function random_host() {
-    array=('8.8.8.8' '8.8.4.4' '195.5.62.1' '80.92.65.2' '98.139.183.24' '94.100.180.202' '97.74.104.218' '103.224.182.210' '67.215.92.219' '72.52.6.254' '200.49.130.140' '216.58.214.1' '62.140.243.1' '17.172.224.2' '151.101.0.1' '104.16.81.1' '104.160.182.1')
+    array=('8.8.8.8' '8.8.4.4' '195.5.62.1' '80.92.65.2' '98.139.183.24' '94.100.180.202' '103.224.182.210' '67.215.92.219' '72.52.6.254' '216.58.214.1' '62.140.243.1' '151.101.0.1' '104.16.81.1' '104.160.182.1')
     shuffle
     echo $array
 }
 
 function current_isp() {
-    rt=$(netstat -rn|grep default)
+    rt=$(netstat -rn|egrep '^0.0.0.0')
     if [ "$(echo $rt|grep usb0)" != "" ]; then
 	echo "fallback"
     elif [ "$(echo $rt|grep ppp0)" != "" ]; then
@@ -76,6 +76,10 @@ while :; do
     sleep 10
     ping -c 1 $(random_host)
     if [ $? -eq 0 ]; then
+	if [ $cnt -gt 0 ]; then
+		cnt=$(( cnt - 1 ))
+		echo 'Ping ok, decreasing counter...'
+	fi
 	continue
     fi
     cnt=$(( cnt + 1 ))
